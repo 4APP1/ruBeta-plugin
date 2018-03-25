@@ -110,9 +110,11 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener
           (event.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK))
         {
           if (fly.isFlying(player).intValue() == 0)
+                
           {
             player.sendMessage("You are now flying.");
-            
+            player.performCommand("god");
+
             if (!fly.featherPoints.containsKey(player)) {
               fly.setFeatherPoints(player, fly.defaultFeatherAmount.intValue());
             }

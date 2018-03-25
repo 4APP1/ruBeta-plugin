@@ -16,7 +16,6 @@ import java.util.HashMap;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -26,7 +25,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
 public class fly extends JavaPlugin
+
 {
+
   public static final HashMap<Player, Integer> flyingPlayers = new HashMap();
   public static final HashMap<Player, Location> hoverLocs = new HashMap();
   public static final HashMap<Player, Integer> featherPoints = new HashMap();
@@ -98,7 +99,7 @@ public class fly extends JavaPlugin
     }
     System.out.println("[fly] Ops allowed to fly regardless: " + (allowOps ? "TRUE" : "FALSE"));
   }
-  
+
   @Override
   public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String commandLabel, String[] args){
     if (commandLabel.equalsIgnoreCase("colours")) {
@@ -106,8 +107,9 @@ public class fly extends JavaPlugin
       Player p = (Player)sender;
       p.sendMessage("Все цветовые коды майнкрафта");
       p.sendMessage(ChatColor.BLACK + "&0, " + ChatColor.DARK_BLUE + "&1, " + ChatColor.DARK_GREEN + "&2, " + ChatColor.DARK_AQUA + "&3, " + ChatColor.DARK_RED + "&4, " + ChatColor.DARK_PURPLE + "&5, " + ChatColor.GOLD + "&6, " + ChatColor.GRAY + "&7, " + ChatColor.DARK_GRAY + "&8, " + ChatColor.BLUE + "&9, " + ChatColor.GREEN + "&a, " + ChatColor.AQUA + "&b, " + ChatColor.RED + "&c, " + ChatColor.LIGHT_PURPLE + "&d, " + ChatColor.YELLOW + "&e, " + ChatColor.WHITE + "&f");
-      }
+    }
         return true;
+
   }
   //Создание флая
   public static void checkConfig()
