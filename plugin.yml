@@ -1,0 +1,11 @@
+name: ruBeta
+main: ru.hpp.fly.fly
+version: 1.1
+Author: [HappyWaffle]
+commands:
+    colours:
+        description: Показывает все цветовые кода
+        usage: /<command>
+permissions:
+    fly.fly:
+        description: Право на флай
