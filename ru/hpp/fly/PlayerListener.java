@@ -113,7 +113,6 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener
                 
           {
             player.sendMessage("You are now flying.");
-            player.performCommand("god");
 
             if (!fly.featherPoints.containsKey(player)) {
               fly.setFeatherPoints(player, fly.defaultFeatherAmount.intValue());
@@ -131,6 +130,7 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener
           {
             player.sendMessage("You are no longer flying.");
             fly.setFlying(player, Integer.valueOf(0));
+
           }
           
           event.setCancelled(true);

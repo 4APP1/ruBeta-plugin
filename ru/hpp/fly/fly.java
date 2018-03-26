@@ -27,7 +27,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 public class fly extends JavaPlugin
 
 {
-
+  public static final HashMap<Player, Double> active = new HashMap();
   public static final HashMap<Player, Integer> flyingPlayers = new HashMap();
   public static final HashMap<Player, Location> hoverLocs = new HashMap();
   public static final HashMap<Player, Integer> featherPoints = new HashMap();
@@ -85,7 +85,7 @@ public class fly extends JavaPlugin
     pm.registerEvent(Event.Type.PLAYER_QUIT, pListener, priority, plugin);
     pm.registerEvent(Event.Type.PLAYER_MOVE, pListener, priority, plugin);
     pm.registerEvent(Event.Type.PLAYER_INTERACT, pListener, priority, plugin);
-    pm.registerEvent(Event.Type.ENTITY_DAMAGE, eListener, priority, plugin);
+    pm.registerEvent(Event.Type.ENTITY_DAMAGE, eListener, Event.Priority.Highest, plugin);
     
     tTask = timer.scheduleSyncRepeatingTask(plugin, task, 1L, 1L);
     
@@ -109,6 +109,7 @@ public class fly extends JavaPlugin
       p.sendMessage(ChatColor.BLACK + "&0, " + ChatColor.DARK_BLUE + "&1, " + ChatColor.DARK_GREEN + "&2, " + ChatColor.DARK_AQUA + "&3, " + ChatColor.DARK_RED + "&4, " + ChatColor.DARK_PURPLE + "&5, " + ChatColor.GOLD + "&6, " + ChatColor.GRAY + "&7, " + ChatColor.DARK_GRAY + "&8, " + ChatColor.BLUE + "&9, " + ChatColor.GREEN + "&a, " + ChatColor.AQUA + "&b, " + ChatColor.RED + "&c, " + ChatColor.LIGHT_PURPLE + "&d, " + ChatColor.YELLOW + "&e, " + ChatColor.WHITE + "&f");
     }
         return true;
+
 
   }
   //Создание флая
@@ -335,5 +336,7 @@ public class fly extends JavaPlugin
     }
     
     return retVal;
+        
   }
+  
 }
