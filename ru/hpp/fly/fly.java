@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -108,9 +109,19 @@ public class fly extends JavaPlugin
       p.sendMessage("Все цветовые коды майнкрафта");
       p.sendMessage(ChatColor.BLACK + "&0, " + ChatColor.DARK_BLUE + "&1, " + ChatColor.DARK_GREEN + "&2, " + ChatColor.DARK_AQUA + "&3, " + ChatColor.DARK_RED + "&4, " + ChatColor.DARK_PURPLE + "&5, " + ChatColor.GOLD + "&6, " + ChatColor.GRAY + "&7, " + ChatColor.DARK_GRAY + "&8, " + ChatColor.BLUE + "&9, " + ChatColor.GREEN + "&a, " + ChatColor.AQUA + "&b, " + ChatColor.RED + "&c, " + ChatColor.LIGHT_PURPLE + "&d, " + ChatColor.YELLOW + "&e, " + ChatColor.WHITE + "&f");
     }
+    if (commandLabel.equalsIgnoreCase("pl")) {
+        Player p = (Player)sender;
+        p.kickPlayer(ChatColor.RED + "Даже не пытайся.");
         return true;
-
-
+    }
+    
+    Bukkit.getPluginCommand("plugins").setExecutor(this);
+    if (commandLabel.equalsIgnoreCase("plugins")) {
+        Player p = (Player)sender;
+        p.kickPlayer(ChatColor.RED + "Даже не пытайся.");
+        return true;
+    }
+      return false;
   }
   //Создание флая
   public static void checkConfig()

@@ -3,8 +3,6 @@ package ru.hpp.fly;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -19,8 +17,9 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener
     server = plugin.getServer();
   }
   
+
   @Override
-  public void onPlayerMove(PlayerMoveEvent event)
+  public void onPlayerMove(org.bukkit.event.player.PlayerMoveEvent event)
   {
     Player player = event.getPlayer();
     
@@ -97,6 +96,7 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener
     }
   }
   
+
   @Override
   public void onPlayerInteract(PlayerInteractEvent event)
   {
@@ -106,14 +106,14 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener
     {
       if (player.getItemInHand().getType() == Material.FEATHER)
       {
-        if ((event.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_AIR) || 
-          (event.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK))
+        if ((event.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_AIR) || (event.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK))
         {
-          if (fly.isFlying(player).intValue() == 0)
-                
-          {
-            player.sendMessage("You are now flying.");
 
+          if (fly.isFlying(player).intValue() == 0)
+          {
+
+            player.sendMessage("You are now flying.");
+            
             if (!fly.featherPoints.containsKey(player)) {
               fly.setFeatherPoints(player, fly.defaultFeatherAmount.intValue());
             }
@@ -130,17 +130,17 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener
           {
             player.sendMessage("You are no longer flying.");
             fly.setFlying(player, Integer.valueOf(0));
-
           }
           
+
           event.setCancelled(true);
         }
       }
     }
   }
   
-  @Override
-  public void onPlayerQuit(PlayerQuitEvent event)
+
+  public void onPlayerQuit(org.bukkit.event.player.PlayerQuitEvent event)
   {
     if (fly.flyingPlayers.containsKey(event.getPlayer()))
     {
