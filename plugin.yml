@@ -4,7 +4,7 @@ version: 1.4
 Author: [HappyWaffle]
 commands:
     colours:
-        description: Показывает все цветовые кода
+        description: Показывает все цветовые коды майнкрафта
         usage: /<command>
     fly:
         description: Летать
@@ -15,6 +15,9 @@ commands:
     plugins:
         description: Кикает при попытке посмотреть плагины
         usage: /<command>
+    slap:
+        description: Бьёт игрока
+        usage: /<command> <player>
 permissions:
     fly.fly:
         description: Право на флай

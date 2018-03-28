@@ -13,9 +13,14 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Note;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,9 +30,11 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
+
 public class fly extends JavaPlugin
 
 {
+
   public static final HashMap<Player, Double> active = new HashMap();
   public static final HashMap<Player, Integer> flyingPlayers = new HashMap();
   public static final HashMap<Player, Location> hoverLocs = new HashMap();
@@ -103,26 +110,46 @@ public class fly extends JavaPlugin
 
   @Override
   public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String commandLabel, String[] args){
+      if (!(sender instanceof Player)) {
+      sender.sendMessage("Команда работает только у игроков.");
+      return false;
+      }
     if (commandLabel.equalsIgnoreCase("colours")) {
       //Создание игрока
       Player p = (Player)sender;
       p.sendMessage("Все цветовые коды майнкрафта");
       p.sendMessage(ChatColor.BLACK + "&0, " + ChatColor.DARK_BLUE + "&1, " + ChatColor.DARK_GREEN + "&2, " + ChatColor.DARK_AQUA + "&3, " + ChatColor.DARK_RED + "&4, " + ChatColor.DARK_PURPLE + "&5, " + ChatColor.GOLD + "&6, " + ChatColor.GRAY + "&7, " + ChatColor.DARK_GRAY + "&8, " + ChatColor.BLUE + "&9, " + ChatColor.GREEN + "&a, " + ChatColor.AQUA + "&b, " + ChatColor.RED + "&c, " + ChatColor.LIGHT_PURPLE + "&d, " + ChatColor.YELLOW + "&e, " + ChatColor.WHITE + "&f");
     }
-    if (commandLabel.equalsIgnoreCase("pl")) {
+    
+    else if (commandLabel.equalsIgnoreCase("pl")) {
         Player p = (Player)sender;
         p.kickPlayer(ChatColor.RED + "Даже не пытайся.");
-        return true;
+        
+        return true;      
     }
     
-    Bukkit.getPluginCommand("plugins").setExecutor(this);
-    if (commandLabel.equalsIgnoreCase("plugins")) {
-        Player p = (Player)sender;
-        p.kickPlayer(ChatColor.RED + "Даже не пытайся.");
-        return true;
-    }
+    if (commandLabel.equalsIgnoreCase("slap")) { // Команда
+        Player p = (Player)sender; // Создание игрока
+            Player target = Bukkit.getServer().getPlayer(args[0]); //Цель для команды
+            String name = target.getName();
+            String names = p.getName();
+            if (target.getHealth() <= 8) {
+                p.sendMessage(ChatColor.RED + "[ruBeta] " + ChatColor.AQUA + "Хватит бить! Ему же больно.");
+                p.setHealth(p.getHealth() - 1);
+            }
+            else {
+                target.setHealth(target.getHealth() - 3);
+                target.setHealth(target.getHealth() + 2);
+                target.sendMessage(ChatColor.RED + "[ruBeta] " + ChatColor.RED + "Тебя ударил: " + names);
+                p.sendMessage(ChatColor.RED + "[ruBeta] " + ChatColor.AQUA + "Ты ударил: " + name);
+            }
+            
+        return true;        
+  
+    }       
       return false;
-  }
+    }
+
   //Создание флая
   public static void checkConfig()
   {
