@@ -34,7 +34,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 public class fly extends JavaPlugin
 
 {
-
+  public HashMap<String, Long> cooldowns = new HashMap<String, Long>();
   public static final HashMap<Player, Double> active = new HashMap();
   public static final HashMap<Player, Integer> flyingPlayers = new HashMap();
   public static final HashMap<Player, Location> hoverLocs = new HashMap();
@@ -110,6 +110,17 @@ public class fly extends JavaPlugin
 
   @Override
   public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String commandLabel, String[] args){
+      int cooldownTimes = 0;
+      int cooldownTime = 180; //В секундах
+      if(cooldowns.containsKey(sender.getName())) {
+            long secondsLeft = ((cooldowns.get(sender.getName())/1000)+cooldownTime) - (System.currentTimeMillis()/1000);
+            if(secondsLeft>0) {
+                // Все еще ждем
+                sender.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Ты сможешь использовать команду через "+ secondsLeft +" секунд!");
+                return true;
+            }
+        }
+      
       if (!(sender instanceof Player)) {
       sender.sendMessage("Команда работает только у игроков.");
       return false;
@@ -129,26 +140,49 @@ public class fly extends JavaPlugin
     }
     
     if (commandLabel.equalsIgnoreCase("slap")) { // Команда
+        // Нет кулдаунов, создание новой
+        cooldowns.put(sender.getName(), System.currentTimeMillis());
         Player p = (Player)sender; // Создание игрока
-            Player target = Bukkit.getServer().getPlayer(args[0]); //Цель для команды
-            String name = target.getName();
-            String names = p.getName();
-            if (target.getHealth() <= 8) {
-                p.sendMessage(ChatColor.RED + "[ruBeta] " + ChatColor.AQUA + "Хватит бить! Ему же больно.");
-                p.setHealth(p.getHealth() - 1);
-            }
-            else {
+        if (args.length==0) {
+        p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Желаешь бить себя?");
+        return true;
+        }
+        
+        Player target = Bukkit.getServer().getPlayer(args[0]); //Цель для команды
+        String name = target.getName();
+        String names = p.getName();
+        
+        if (p.isOp()) {
+            if(target.isOnline()) {
                 target.setHealth(target.getHealth() - 3);
                 target.setHealth(target.getHealth() + 2);
-                target.sendMessage(ChatColor.RED + "[ruBeta] " + ChatColor.RED + "Тебя ударил: " + names);
-                p.sendMessage(ChatColor.RED + "[ruBeta] " + ChatColor.AQUA + "Ты ударил: " + name);
+                target.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.RED + "Тебя ударил: " + names);
+                p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Ты ударил: " + name);
             }
             
+            if (target.getHealth() <= 8) {
+                p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Хватит бить! Ему же больно.");
+                p.setHealth(p.getHealth() - 1);
+        }
+            return true;
+    }
+          if(target.isOnline()) {
+                target.setHealth(target.getHealth() - 3);
+                target.setHealth(target.getHealth() + 2);
+                target.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.RED + "Тебя ударил: " + names);
+                p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Ты ударил: " + name);
+            }
+            
+            if (target.getHealth() <= 8) {
+                p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Хватит бить! Ему же больно.");
+                p.setHealth(p.getHealth() - 1);
+            }   
         return true;        
   
     }       
       return false;
     }
+
 
   //Создание флая
   public static void checkConfig()
