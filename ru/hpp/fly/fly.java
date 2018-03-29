@@ -110,13 +110,12 @@ public class fly extends JavaPlugin
 
   @Override
   public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String commandLabel, String[] args){
-      int cooldownTimes = 0;
-      int cooldownTime = 180; //В секундах
-      if(cooldowns.containsKey(sender.getName())) {
+      int cooldownTime = 60; //В секундах
+      if (cooldowns.containsKey(sender.getName()) && !sender.isOp()) {
             long secondsLeft = ((cooldowns.get(sender.getName())/1000)+cooldownTime) - (System.currentTimeMillis()/1000);
             if(secondsLeft>0) {
                 // Все еще ждем
-                sender.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Ты сможешь использовать команду через "+ secondsLeft +" секунд!");
+                sender.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Жди еще "+secondsLeft+" секунд(ы)!");
                 return true;
             }
         }
@@ -130,6 +129,7 @@ public class fly extends JavaPlugin
       Player p = (Player)sender;
       p.sendMessage("Все цветовые коды майнкрафта");
       p.sendMessage(ChatColor.BLACK + "&0, " + ChatColor.DARK_BLUE + "&1, " + ChatColor.DARK_GREEN + "&2, " + ChatColor.DARK_AQUA + "&3, " + ChatColor.DARK_RED + "&4, " + ChatColor.DARK_PURPLE + "&5, " + ChatColor.GOLD + "&6, " + ChatColor.GRAY + "&7, " + ChatColor.DARK_GRAY + "&8, " + ChatColor.BLUE + "&9, " + ChatColor.GREEN + "&a, " + ChatColor.AQUA + "&b, " + ChatColor.RED + "&c, " + ChatColor.LIGHT_PURPLE + "&d, " + ChatColor.YELLOW + "&e, " + ChatColor.WHITE + "&f");
+      return true;
     }
     
     else if (commandLabel.equalsIgnoreCase("pl")) {
@@ -148,40 +148,40 @@ public class fly extends JavaPlugin
         return true;
         }
         
+        Player targets = Bukkit.getServer().getPlayer(args[0]); //Цель для self
         Player target = Bukkit.getServer().getPlayer(args[0]); //Цель для команды
+        if(target != null){
+            
         String name = target.getName();
         String names = p.getName();
-        
-        if (p.isOp()) {
-            if(target.isOnline()) {
-                target.setHealth(target.getHealth() - 3);
-                target.setHealth(target.getHealth() + 2);
-                target.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.RED + "Тебя ударил: " + names);
-                p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Ты ударил: " + name);
-            }
-            
-            if (target.getHealth() <= 8) {
-                p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Хватит бить! Ему же больно.");
-                p.setHealth(p.getHealth() - 1);
-        }
+
+        if (targets == p) {
+            p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Слап.");
+            targets.setHealth(targets.getHealth() - 1);
             return true;
-    }
-          if(target.isOnline()) {
-                target.setHealth(target.getHealth() - 3);
-                target.setHealth(target.getHealth() + 2);
+        }
+        if (target.isOnline()) {
+                target.setHealth(target.getHealth() - 1);
                 target.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.RED + "Тебя ударил: " + names);
                 p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Ты ударил: " + name);
-            }
-            
+                
+        }
+        
             if (target.getHealth() <= 8) {
                 p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Хватит бить! Ему же больно.");
                 p.setHealth(p.getHealth() - 1);
-            }   
-        return true;        
-  
-    }       
+                target.setHealth(target.getHealth() + 1);
+                
+            }
+            return true;
+        } else {
+            p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Данного игрока нет на сервере.");
+        return true;   
+            
+            }
+   }       
       return false;
-    }
+  }
 
 
   //Создание флая
