@@ -18,6 +18,9 @@ commands:
     slap:
         description: Бьёт игрока
         usage: /<command> <player>
+    uptime:
+        description: Показывает uptime сервера
+        usage: /<command>
 permissions:
     fly.fly:
         description: Право на флай

@@ -13,14 +13,9 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Note;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -71,6 +66,8 @@ public class fly extends JavaPlugin
   @Override
   public void onEnable()
   {
+
+    //Все остальное
     checkConfig();
     setupPermissions();
     
@@ -107,7 +104,7 @@ public class fly extends JavaPlugin
     }
     System.out.println("[fly] Ops allowed to fly regardless: " + (allowOps ? "TRUE" : "FALSE"));
   }
-
+    private final long serverStart = System.currentTimeMillis();
   @Override
   public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String commandLabel, String[] args){
       int cooldownTime = 60; //В секундах
@@ -147,7 +144,6 @@ public class fly extends JavaPlugin
         p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Желаешь бить себя?");
         return true;
         }
-        
         Player targets = Bukkit.getServer().getPlayer(args[0]); //Цель для self
         Player target = Bukkit.getServer().getPlayer(args[0]); //Цель для команды
         if(target != null){
@@ -173,13 +169,27 @@ public class fly extends JavaPlugin
                 target.setHealth(target.getHealth() + 1);
                 
             }
+            if (p.getHealth() <= 8){
+             p.kickPlayer(ChatColor.BLACK + "Даже не пытайся, " + names);
+             target.setHealth(target.getHealth() + 4);
+             target.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Вас попытался ударить " + names + " ,но он был выкинут, так как у него здоровье меньше 4 сердец");
+            }
+
             return true;
         } else {
             p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Данного игрока нет на сервере.");
         return true;   
             
             }
-   }       
+        }
+       if (commandLabel.equalsIgnoreCase("uptime")) {
+           Player p = (Player)sender;
+           long diff = System.currentTimeMillis() - serverStart;
+        String msg = " " + (int)(diff / 86400000L) + " days " + (int)(diff / 3600000L % 24L) + " hours " + (int)(diff / 60000L % 60L) + " mins " + (int)(diff / 1000L % 60L) + " seconds";
+        p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + msg);
+        return true;
+       }
+
       return false;
   }
 
