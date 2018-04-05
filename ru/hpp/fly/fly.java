@@ -17,6 +17,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -107,6 +108,12 @@ public class fly extends JavaPlugin
     private final long serverStart = System.currentTimeMillis();
   @Override
   public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String commandLabel, String[] args){
+    Player p = (Player)sender;
+ 
+ 
+  
+           
+    String names = p.getName();
       int cooldownTime = 60; //В секундах
       if (cooldowns.containsKey(sender.getName()) && !sender.isOp()) {
             long secondsLeft = ((cooldowns.get(sender.getName())/1000)+cooldownTime) - (System.currentTimeMillis()/1000);
@@ -117,20 +124,18 @@ public class fly extends JavaPlugin
             }
         }
       
-      if (!(sender instanceof Player)) {
-      sender.sendMessage("Команда работает только у игроков.");
-      return false;
-      }
+    Player target = Bukkit.getServer().getPlayer(args[0]); //Цель для команды
+   
+ 
+    
     if (commandLabel.equalsIgnoreCase("colours")) {
       //Создание игрока
-      Player p = (Player)sender;
       p.sendMessage("Все цветовые коды майнкрафта");
       p.sendMessage(ChatColor.BLACK + "&0, " + ChatColor.DARK_BLUE + "&1, " + ChatColor.DARK_GREEN + "&2, " + ChatColor.DARK_AQUA + "&3, " + ChatColor.DARK_RED + "&4, " + ChatColor.DARK_PURPLE + "&5, " + ChatColor.GOLD + "&6, " + ChatColor.GRAY + "&7, " + ChatColor.DARK_GRAY + "&8, " + ChatColor.BLUE + "&9, " + ChatColor.GREEN + "&a, " + ChatColor.AQUA + "&b, " + ChatColor.RED + "&c, " + ChatColor.LIGHT_PURPLE + "&d, " + ChatColor.YELLOW + "&e, " + ChatColor.WHITE + "&f");
       return true;
     }
     
     else if (commandLabel.equalsIgnoreCase("pl")) {
-        Player p = (Player)sender;
         p.kickPlayer(ChatColor.RED + "Даже не пытайся.");
         
         return true;      
@@ -138,18 +143,16 @@ public class fly extends JavaPlugin
     
     if (commandLabel.equalsIgnoreCase("slap")) { // Команда
         // Нет кулдаунов, создание новой
+        Player targets = Bukkit.getServer().getPlayer(args[0]); //Цель для self
+        String name = target.getName();
         cooldowns.put(sender.getName(), System.currentTimeMillis());
-        Player p = (Player)sender; // Создание игрока
         if (args.length==0) {
         p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Желаешь бить себя?");
         return true;
         }
-        Player targets = Bukkit.getServer().getPlayer(args[0]); //Цель для self
-        Player target = Bukkit.getServer().getPlayer(args[0]); //Цель для команды
+        
         if(target != null){
             
-        String name = target.getName();
-        String names = p.getName();
 
         if (targets == p) {
             p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Слап.");
@@ -182,8 +185,9 @@ public class fly extends JavaPlugin
             
             }
         }
+    
+    
        if (commandLabel.equalsIgnoreCase("uptime")) {
-           Player p = (Player)sender;
            long diff = System.currentTimeMillis() - serverStart;
         String msg = " " + (int)(diff / 86400000L) + " days " + (int)(diff / 3600000L % 24L) + " hours " + (int)(diff / 60000L % 60L) + " mins " + (int)(diff / 1000L % 60L) + " seconds";
         p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + msg);
@@ -193,6 +197,7 @@ public class fly extends JavaPlugin
       return false;
   }
 
+  
 
   //Создание флая
   public static void checkConfig()
@@ -420,5 +425,12 @@ public class fly extends JavaPlugin
     return retVal;
         
   }
+            int x = 10;
+            int y = 10;
+            int z = -10;
+            World w = Bukkit.getWorld("world");
+            Location sapling = new Location(w, x, y, z);
+            sapling.getBlock().setType(6);
+  
   
 }
