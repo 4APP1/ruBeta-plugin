@@ -13,9 +13,11 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -30,7 +32,8 @@ import org.bukkit.scheduler.BukkitScheduler;
 public class fly extends JavaPlugin
 
 {
-  public HashMap<String, Long> cooldowns = new HashMap<String, Long>();
+  
+  public static HashMap<Player, Boolean> cooldown = new HashMap<Player, Boolean>();
   public static final HashMap<Player, Double> active = new HashMap();
   public static final HashMap<Player, Integer> flyingPlayers = new HashMap();
   public static final HashMap<Player, Location> hoverLocs = new HashMap();
@@ -63,11 +66,14 @@ public class fly extends JavaPlugin
     }
    
   
+    
+    
   }
   @Override
   public void onEnable()
   {
 
+      
     //Все остальное
     checkConfig();
     setupPermissions();
@@ -106,26 +112,78 @@ public class fly extends JavaPlugin
     System.out.println("[fly] Ops allowed to fly regardless: " + (allowOps ? "TRUE" : "FALSE"));
   }
     private final long serverStart = System.currentTimeMillis();
+    
+    
+    
   @Override
   public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String commandLabel, String[] args){
-    Player p = (Player)sender;
- 
- 
-  
-           
-    String names = p.getName();
-      int cooldownTime = 60; //В секундах
-      if (cooldowns.containsKey(sender.getName()) && !sender.isOp()) {
-            long secondsLeft = ((cooldowns.get(sender.getName())/1000)+cooldownTime) - (System.currentTimeMillis()/1000);
-            if(secondsLeft>0) {
-                // Все еще ждем
-                sender.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Жди еще "+secondsLeft+" секунд(ы)!");
-                return true;
-            }
-        }
+            Player p = (Player)sender;
       
-    Player target = Bukkit.getServer().getPlayer(args[0]); //Цель для команды
-   
+           if (commandLabel.equalsIgnoreCase("sapling")) {
+            int x = 24930;
+            int x1 = 24935;
+            int x2 = 24940;
+            int x3 = 24945;
+            
+            int y = 70;
+            
+            int z = 25052;
+            int z1 = 25056;
+            int z2 = 25061;
+            int z3 = 25066;
+            int z4 = 25071;
+            
+            World w = Bukkit.getWorld("world");
+            
+            Location sapling = new Location(w, x, y, z);
+            Location sapling1 = new Location(w, x, y, z1);
+            Location sapling2 = new Location(w, x, y, z2);
+            Location sapling3 = new Location(w, x, y, z3);
+            Location sapling4 = new Location(w, x, y, z4);
+            
+            Location sapling17 = new Location(w, x1, y, z);
+            Location sapling5 = new Location(w, x1, y, z1);
+            Location sapling6 = new Location(w, x1, y, z2);
+            Location sapling7 = new Location(w, x1, y, z3);
+            Location sapling8 = new Location(w, x1, y, z4);
+            
+            Location sapling18 = new Location(w, x2, y, z);
+            Location sapling9 = new Location(w, x2, y, z1);
+            Location sapling10 = new Location(w, x2, y, z2);
+            Location sapling11 = new Location(w, x2, y, z3);
+            Location sapling12 = new Location(w, x2, y, z4);
+            
+            Location sapling19 = new Location(w, x3, y, z);
+            Location sapling13 = new Location(w, x3, y, z1);
+            Location sapling14 = new Location(w, x3, y, z2);
+            Location sapling15 = new Location(w, x3, y, z3);
+            Location sapling16 = new Location(w, x3, y, z4);
+            
+            sapling.getBlock().setType(Material.SAPLING);
+            sapling1.getBlock().setType(Material.SAPLING);
+            sapling2.getBlock().setType(Material.SAPLING);
+            sapling3.getBlock().setType(Material.SAPLING);
+            sapling4.getBlock().setType(Material.SAPLING);
+            sapling5.getBlock().setType(Material.SAPLING);
+            sapling6.getBlock().setType(Material.SAPLING);
+            sapling7.getBlock().setType(Material.SAPLING);
+            sapling8.getBlock().setType(Material.SAPLING);
+            sapling9.getBlock().setType(Material.SAPLING);
+            sapling10.getBlock().setType(Material.SAPLING);
+            sapling11.getBlock().setType(Material.SAPLING);
+            sapling12.getBlock().setType(Material.SAPLING);
+            sapling13.getBlock().setType(Material.SAPLING);
+            sapling14.getBlock().setType(Material.SAPLING);
+            sapling15.getBlock().setType(Material.SAPLING);
+            sapling16.getBlock().setType(Material.SAPLING);
+            sapling17.getBlock().setType(Material.SAPLING);
+            sapling18.getBlock().setType(Material.SAPLING);
+            sapling19.getBlock().setType(Material.SAPLING);
+            
+            p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Вы посадили деревья!");
+            return true;
+       }  
+         
  
     
     if (commandLabel.equalsIgnoreCase("colours")) {
@@ -140,61 +198,16 @@ public class fly extends JavaPlugin
         
         return true;      
     }
-    
-    if (commandLabel.equalsIgnoreCase("slap")) { // Команда
-        // Нет кулдаунов, создание новой
-        Player targets = Bukkit.getServer().getPlayer(args[0]); //Цель для self
-        String name = target.getName();
-        cooldowns.put(sender.getName(), System.currentTimeMillis());
-        if (args.length==0) {
-        p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Желаешь бить себя?");
-        return true;
-        }
-        
-        if(target != null){
-            
 
-        if (targets == p) {
-            p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Слап.");
-            targets.setHealth(targets.getHealth() - 1);
-            return true;
-        }
-        if (target.isOnline()) {
-                target.setHealth(target.getHealth() - 1);
-                target.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.RED + "Тебя ударил: " + names);
-                p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Ты ударил: " + name);
-                
-        }
-        
-            if (target.getHealth() <= 8) {
-                p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Хватит бить! Ему же больно.");
-                p.setHealth(p.getHealth() - 1);
-                target.setHealth(target.getHealth() + 1);
-                
-            }
-            if (p.getHealth() <= 8){
-             p.kickPlayer(ChatColor.BLACK + "Даже не пытайся, " + names);
-             target.setHealth(target.getHealth() + 4);
-             target.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Вас попытался ударить " + names + " ,но он был выкинут, так как у него здоровье меньше 4 сердец");
-            }
-
-            return true;
-        } else {
-            p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Данного игрока нет на сервере.");
-        return true;   
-            
-            }
-        }
-    
-    
        if (commandLabel.equalsIgnoreCase("uptime")) {
            long diff = System.currentTimeMillis() - serverStart;
         String msg = " " + (int)(diff / 86400000L) + " days " + (int)(diff / 3600000L % 24L) + " hours " + (int)(diff / 60000L % 60L) + " mins " + (int)(diff / 1000L % 60L) + " seconds";
         p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + msg);
         return true;
        }
-
       return false;
+         
+
   }
 
   
@@ -424,13 +437,9 @@ public class fly extends JavaPlugin
     
     return retVal;
         
+    
+    
   }
-            int x = 10;
-            int y = 10;
-            int z = -10;
-            World w = Bukkit.getWorld("world");
-            Location sapling = new Location(w, x, y, z);
-            sapling.getBlock().setType(6);
   
   
 }

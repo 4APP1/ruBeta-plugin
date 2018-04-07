@@ -1,10 +1,14 @@
 package ru.hpp.fly;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+import static ru.hpp.fly.fly.active;
 
 public class PlayerListener extends org.bukkit.event.player.PlayerListener
 {
@@ -22,6 +26,9 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener
   public void onPlayerMove(org.bukkit.event.player.PlayerMoveEvent event)
   {
     Player player = event.getPlayer();
+    
+      if ((!active.containsKey(player)) || (!player.isSneaking())) return;
+      player.setVelocity(player.getLocation().getDirection().multiply(((Double)active.get(player)).doubleValue()));
     
     if (fly.isFlying(player).intValue() == 1)
     {
@@ -95,7 +102,14 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener
       }
     }
   }
+    
+
   
+  @Override
+  public void onPlayerJoin(PlayerJoinEvent event) {
+      Player p = event.getPlayer();
+      fly.cooldown.put(p, true);
+  }
 
   @Override
   public void onPlayerInteract(PlayerInteractEvent event)
@@ -132,7 +146,9 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener
             fly.setFlying(player, Integer.valueOf(0));
           }
           
-
+      
+               
+           
           event.setCancelled(true);
         }
       }
@@ -147,5 +163,10 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener
       fly.flyingPlayers.remove(event.getPlayer());
       System.out.println("[fly] Player quit; removed from list.");
     }
+  }
+  public void onPlayerRespawn(PlayerRespawnEvent event)
+  {
+      active.remove(event.getPlayer());
+    
   }
 }

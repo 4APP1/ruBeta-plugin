@@ -9,19 +9,24 @@ commands:
     fly:
         description: Летать
         usage: /<command>
+    land:
+        description: Приземлиться
+        usage: /<command>
     pl:
         description: Кикает при попытке посмотреть плагины
         usage: /<command>
     plugins:
         description: Кикает при попытке посмотреть плагины
         usage: /<command>
-    slap:
-        description: Бьёт игрока
-        usage: /<command> <player>
     uptime:
         description: Показывает uptime сервера
+        usage: /<command>
+    sapling:
+        description: Ставит саженцы в поле
         usage: /<command>
 permissions:
     fly.fly:
         description: Право на флай
+    IBICF.fly:
+        description: Право на флай(ibicf плагин)
         
