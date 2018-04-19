@@ -24,9 +24,16 @@ commands:
     sapling:
         description: Ставит саженцы в поле
         usage: /<command>
+    repair:
+        description: Чинит.
+        usage: /<command>
+    crash:
+        description: краш.
+        usage: /<command>
 permissions:
     fly.fly:
         description: Право на флай
-    IBICF.fly:
-        description: Право на флай(ibicf плагин)
+    ru.speed:
+        description: Право на /speed
+        
         

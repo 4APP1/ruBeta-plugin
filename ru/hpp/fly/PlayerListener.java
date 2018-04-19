@@ -1,10 +1,12 @@
 package ru.hpp.fly;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -106,8 +108,10 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener
 
   
   @Override
-  public void onPlayerJoin(PlayerJoinEvent event) {
-      Player p = event.getPlayer();
+  public void onPlayerJoin(org.bukkit.event.player.PlayerJoinEvent event) {
+    Player p = event.getPlayer();
+    event.setJoinMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Player " + p.getName() + " came for Nostalgia!");
+
       fly.cooldown.put(p, true);
   }
 
@@ -156,17 +160,25 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener
   }
   
 
+  @Override
   public void onPlayerQuit(org.bukkit.event.player.PlayerQuitEvent event)
   {
+    Player p = event.getPlayer();
+    event.setQuitMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + p.getName() + " was bored of Nostalgia and quit!");
+    
     if (fly.flyingPlayers.containsKey(event.getPlayer()))
     {
       fly.flyingPlayers.remove(event.getPlayer());
       System.out.println("[fly] Player quit; removed from list.");
     }
   }
+  @Override
   public void onPlayerRespawn(PlayerRespawnEvent event)
   {
       active.remove(event.getPlayer());
     
   }
+  
+   
+  
 }

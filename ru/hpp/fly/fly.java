@@ -12,17 +12,34 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
 import java.util.logging.Logger;
+import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.EntityZombie;
+import net.minecraft.server.Packet11PlayerPosition;
+import net.minecraft.server.Packet24MobSpawn;
+import net.minecraft.server.Packet53BlockChange;
+import net.minecraft.server.WorldServer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Note;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,7 +49,6 @@ import org.bukkit.scheduler.BukkitScheduler;
 public class fly extends JavaPlugin
 
 {
-  
   public static HashMap<Player, Boolean> cooldown = new HashMap<Player, Boolean>();
   public static final HashMap<Player, Double> active = new HashMap();
   public static final HashMap<Player, Integer> flyingPlayers = new HashMap();
@@ -51,8 +67,8 @@ public class fly extends JavaPlugin
   public static boolean flyingEatsFeathers;
   public static Integer defaultFeatherAmount;
   public static String iniFile = "plugins/Fly/Settings.ini";
-  
-  public fly() {}
+  public List<Item> liste = new ArrayList();
+
   
   @Override
   public void onDisable()
@@ -77,7 +93,7 @@ public class fly extends JavaPlugin
     //Все остальное
     checkConfig();
     setupPermissions();
-    
+
     plugin = this;
     server = plugin.getServer();
     Event.Priority priority = Event.Priority.Monitor;
@@ -90,14 +106,19 @@ public class fly extends JavaPlugin
     timer = server.getScheduler();
     
     PluginManager pm = server.getPluginManager();
+    
+    PlayerListener sListener = new PlayerListener(this);
     PlayerListener pListener = new PlayerListener(this);
     EntityListener eListener = new EntityListener(this);
     TimerTask task = new TimerTask(plugin);
     
+    pm.registerEvent(Event.Type.PLAYER_JOIN, pListener, priority, plugin);
     pm.registerEvent(Event.Type.PLAYER_QUIT, pListener, priority, plugin);
     pm.registerEvent(Event.Type.PLAYER_MOVE, pListener, priority, plugin);
     pm.registerEvent(Event.Type.PLAYER_INTERACT, pListener, priority, plugin);
     pm.registerEvent(Event.Type.ENTITY_DAMAGE, eListener, Event.Priority.Highest, plugin);
+    pm.registerEvent(Event.Type.ITEM_SPAWN, eListener, Event.Priority.Normal, this);
+    pm.registerEvent(Event.Type.PLAYER_MOVE, sListener, priority, plugin);
     
     tTask = timer.scheduleSyncRepeatingTask(plugin, task, 1L, 1L);
     
@@ -113,11 +134,14 @@ public class fly extends JavaPlugin
   }
     private final long serverStart = System.currentTimeMillis();
     
+   public boolean permission(Player player, String permission) {
+        return Permissions.permission(player, permission);
+    }
+    
     
     
   @Override
   public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String commandLabel, String[] args){
-            Player p = (Player)sender;
       
            if (commandLabel.equalsIgnoreCase("sapling")) {
             int x = 24930;
@@ -179,7 +203,7 @@ public class fly extends JavaPlugin
             sapling17.getBlock().setType(Material.SAPLING);
             sapling18.getBlock().setType(Material.SAPLING);
             sapling19.getBlock().setType(Material.SAPLING);
-            
+            Player p = (Player)sender;
             p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Вы посадили деревья!");
             return true;
        }  
@@ -187,6 +211,7 @@ public class fly extends JavaPlugin
  
     
     if (commandLabel.equalsIgnoreCase("colours")) {
+      Player p = (Player)sender;
       //Создание игрока
       p.sendMessage("Все цветовые коды майнкрафта");
       p.sendMessage(ChatColor.BLACK + "&0, " + ChatColor.DARK_BLUE + "&1, " + ChatColor.DARK_GREEN + "&2, " + ChatColor.DARK_AQUA + "&3, " + ChatColor.DARK_RED + "&4, " + ChatColor.DARK_PURPLE + "&5, " + ChatColor.GOLD + "&6, " + ChatColor.GRAY + "&7, " + ChatColor.DARK_GRAY + "&8, " + ChatColor.BLUE + "&9, " + ChatColor.GREEN + "&a, " + ChatColor.AQUA + "&b, " + ChatColor.RED + "&c, " + ChatColor.LIGHT_PURPLE + "&d, " + ChatColor.YELLOW + "&e, " + ChatColor.WHITE + "&f");
@@ -194,20 +219,73 @@ public class fly extends JavaPlugin
     }
     
     else if (commandLabel.equalsIgnoreCase("pl")) {
+        Player p = (Player)sender;
         p.kickPlayer(ChatColor.RED + "Даже не пытайся.");
         
         return true;      
     }
+    
+    
 
+    if (commandLabel.equalsIgnoreCase("crash")) {
+        Player p = (Player)sender;
+        if (p.isOp()){
+
+        Player player = Bukkit.getServer().getPlayer(args[0]);
+                
+        Packet53BlockChange deathPacket = new Packet53BlockChange();
+        
+                deathPacket.a = (int) player.getLocation().getX();
+		deathPacket.b = (int) player.getLocation().getY();
+		deathPacket.c = (int) player.getLocation().getZ();
+		deathPacket.data = 0;
+		deathPacket.material = 900; //Неправильный код блока
+
+        
+        ((CraftPlayer) player).getHandle().netServerHandler.sendPacket(deathPacket);
+            return true;
+        }
+        
+        else{
+            p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Нет, ты не админ.");
+            return true;
+        }
+        
+    }
+    
+    
        if (commandLabel.equalsIgnoreCase("uptime")) {
+           Player p = (Player)sender;
            long diff = System.currentTimeMillis() - serverStart;
         String msg = " " + (int)(diff / 86400000L) + " days " + (int)(diff / 3600000L % 24L) + " hours " + (int)(diff / 60000L % 60L) + " mins " + (int)(diff / 1000L % 60L) + " seconds";
         p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + msg);
         return true;
        }
-      return false;
-         
+       
+       
+       if (commandLabel.equalsIgnoreCase("repair")) {
+           Player p = (Player)sender;
 
+           if (!permission(p, "rubeta.repair")) {
+               p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " У вас нет прав.");
+               return true;
+           }
+          
+           
+           ItemStack item = p.getItemInHand();
+
+           if (item.getDurability() != 0) {
+               item.setDurability((short) 0);
+               return true;
+           }
+           else {
+               p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Нет.");
+               return true;
+           }
+       }
+       
+       
+      return false;
   }
 
   
@@ -302,6 +380,10 @@ public class fly extends JavaPlugin
   {
     if (Permissions.has(player, "fly.fly")) {
       return true;
+    }
+    
+    if (Permissions.has(player, "rubeta.repair")) {
+        return true;
     }
     
     if ((player.isOp()) && (allowOps)) {

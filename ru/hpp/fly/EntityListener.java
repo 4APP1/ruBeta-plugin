@@ -1,7 +1,12 @@
 package ru.hpp.fly;
 
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.util.Vector;
 import static ru.hpp.fly.fly.active;
 
 public class EntityListener extends org.bukkit.event.entity.EntityListener
@@ -24,8 +29,6 @@ public class EntityListener extends org.bukkit.event.entity.EntityListener
           if (active.containsKey(p)) event.setCancelled(true);
         }
       }
-       
-                 
-      
-  }
+  
+}
   
