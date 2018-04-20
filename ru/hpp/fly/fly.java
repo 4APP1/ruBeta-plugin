@@ -49,7 +49,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 public class fly extends JavaPlugin
 
 {
-  public static HashMap<Player, Boolean> cooldown = new HashMap<Player, Boolean>();
+  public HashMap<String, Long> cooldowns = new HashMap<String, Long>();
   public static final HashMap<Player, Double> active = new HashMap();
   public static final HashMap<Player, Integer> flyingPlayers = new HashMap();
   public static final HashMap<Player, Location> hoverLocs = new HashMap();
@@ -142,7 +142,9 @@ public class fly extends JavaPlugin
     
   @Override
   public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String commandLabel, String[] args){
-      
+        int cooldownTime = 3600;
+
+        
            if (commandLabel.equalsIgnoreCase("sapling")) {
             int x = 24930;
             int x1 = 24935;
@@ -262,9 +264,19 @@ public class fly extends JavaPlugin
         return true;
        }
        
-       
        if (commandLabel.equalsIgnoreCase("repair")) {
            Player p = (Player)sender;
+           
+                   
+         if (cooldowns.containsKey(sender.getName()) && !sender.isOp()) {
+            long secondsLeft = ((cooldowns.get(sender.getName())/1000)+cooldownTime) - (System.currentTimeMillis()/1000);
+            if(secondsLeft>0) {
+                // Все еще кулдаун
+                sender.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Жди еще "+secondsLeft+" секунд");
+                return true;
+            }
+        }
+        cooldowns.put(sender.getName(), System.currentTimeMillis());
 
            if (!permission(p, "rubeta.repair")) {
                p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " У вас нет прав.");
@@ -273,7 +285,6 @@ public class fly extends JavaPlugin
           
            
            ItemStack item = p.getItemInHand();
-
            if (item.getDurability() != 0) {
                item.setDurability((short) 0);
                return true;
@@ -283,7 +294,7 @@ public class fly extends JavaPlugin
                return true;
            }
        }
-       
+
        
       return false;
   }

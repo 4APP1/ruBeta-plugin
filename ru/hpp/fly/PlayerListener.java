@@ -112,7 +112,6 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener
     Player p = event.getPlayer();
     event.setJoinMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Player " + p.getName() + " came for Nostalgia!");
 
-      fly.cooldown.put(p, true);
   }
 
   @Override
