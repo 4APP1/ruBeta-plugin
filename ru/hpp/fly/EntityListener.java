@@ -30,17 +30,6 @@ public class EntityListener extends org.bukkit.event.entity.EntityListener
           if (active.containsKey(p)) event.setCancelled(true);
         }
       }
-  
-   public void onCreeperDeath(EntityDeathEvent event)
-  {
-      Entity e = event.getEntity();
-      
-      if (e instanceof Zombie) {
-
-            ItemStack item = new ItemStack(Material.BEDROCK);
-
-            event.getDrops().add(item);
-    }
   }
-}
+
   

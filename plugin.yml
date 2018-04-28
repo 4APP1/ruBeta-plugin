@@ -36,6 +36,9 @@ commands:
     ptime:
         description: /ptime day or night
         usage: /ptime <day/night>
+    record:
+        description: test
+        usage: /record 
 permissions:
     fly.fly:
         description: Право на флай

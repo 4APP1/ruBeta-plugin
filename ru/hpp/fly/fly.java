@@ -12,12 +12,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import net.minecraft.server.Packet53BlockChange;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -33,13 +35,13 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
+import static ru.hpp.fly.fly.checkConfig;
 
 
 public class fly extends JavaPlugin
 
 {
     
-  public HashMap<String, String> chat = new HashMap<String, String>(); 
   public HashMap<String, Long> cooldowns = new HashMap<String, Long>();
   public static final HashMap<Player, Double> active = new HashMap();
   public static final HashMap<Player, Integer> flyingPlayers = new HashMap();
@@ -64,12 +66,7 @@ public class fly extends JavaPlugin
   @Override
   public void onDisable()
   {
-      
-      for(Player p : Bukkit.getOnlinePlayers()) {
-          
-          chat.remove(p.getName());
-          
-      }
+
       
     try {
       timer.cancelTask(tTask);
@@ -86,7 +83,6 @@ public class fly extends JavaPlugin
   @Override
   public void onEnable()
   {
-        
     //Все остальное
     checkConfig();
     setupPermissions();
@@ -225,6 +221,8 @@ public class fly extends JavaPlugin
     
     else if (commandLabel.equalsIgnoreCase("pl")) {
         Player p = (Player)sender;
+      
+        
         p.kickPlayer(ChatColor.RED + "Даже не пытайся.");
         
         return true;      
@@ -334,6 +332,16 @@ public class fly extends JavaPlugin
               return true;
           }
         }
+       }
+       
+       if (commandLabel.equalsIgnoreCase("record")) {
+           
+           for(Player p : Bukkit.getOnlinePlayers()) {
+               if (p.isOp()) {
+               p.playEffect(p.getLocation(), Effect.RECORD_PLAY, Material.GOLD_RECORD.getId());
+               return true;
+               } else p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Хорошая попытка!");
+           }
        }
        
       return false;
