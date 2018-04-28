@@ -1,12 +1,18 @@
 package ru.hpp.fly;
 
-import org.bukkit.Bukkit;
+import static java.lang.Math.random;
+import static java.lang.StrictMath.random;
+import java.util.Random;
+import static org.bukkit.Bukkit.getServer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Zombie;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -114,6 +120,10 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener
 
   }
 
+
+  
+  
+  
   @Override
   public void onPlayerInteract(PlayerInteractEvent event)
   {
@@ -149,10 +159,7 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener
             fly.setFlying(player, Integer.valueOf(0));
           }
           
-      
-               
-           
-          event.setCancelled(true);
+        
         }
       }
     }
@@ -177,7 +184,4 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener
       active.remove(event.getPlayer());
     
   }
-  
-   
-  
 }

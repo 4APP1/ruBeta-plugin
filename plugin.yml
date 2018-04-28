@@ -30,6 +30,12 @@ commands:
     crash:
         description: краш.
         usage: /<command>
+    dur:
+        description: Узнает остаток предметов
+        usage: /<command>
+    ptime:
+        description: /ptime day or night
+        usage: /ptime <day/night>
 permissions:
     fly.fly:
         description: Право на флай

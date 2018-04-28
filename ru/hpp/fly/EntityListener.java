@@ -1,13 +1,14 @@
 package ru.hpp.fly;
 
-import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Item;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.ItemSpawnEvent;
-import org.bukkit.util.Vector;
+import org.bukkit.event.entity.EntityDeathEvent;
 import static ru.hpp.fly.fly.active;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+
 
 public class EntityListener extends org.bukkit.event.entity.EntityListener
 {
@@ -30,5 +31,16 @@ public class EntityListener extends org.bukkit.event.entity.EntityListener
         }
       }
   
+   public void onCreeperDeath(EntityDeathEvent event)
+  {
+      Entity e = event.getEntity();
+      
+      if (e instanceof Zombie) {
+
+            ItemStack item = new ItemStack(Material.BEDROCK);
+
+            event.getDrops().add(item);
+    }
+  }
 }
   

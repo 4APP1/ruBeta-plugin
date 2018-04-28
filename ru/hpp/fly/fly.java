@@ -13,33 +13,22 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
-import java.util.logging.Logger;
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.EntityZombie;
-import net.minecraft.server.Packet11PlayerPosition;
-import net.minecraft.server.Packet24MobSpawn;
 import net.minecraft.server.Packet53BlockChange;
-import net.minecraft.server.WorldServer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Note;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -49,6 +38,8 @@ import org.bukkit.scheduler.BukkitScheduler;
 public class fly extends JavaPlugin
 
 {
+    
+  public HashMap<String, String> chat = new HashMap<String, String>(); 
   public HashMap<String, Long> cooldowns = new HashMap<String, Long>();
   public static final HashMap<Player, Double> active = new HashMap();
   public static final HashMap<Player, Integer> flyingPlayers = new HashMap();
@@ -73,6 +64,13 @@ public class fly extends JavaPlugin
   @Override
   public void onDisable()
   {
+      
+      for(Player p : Bukkit.getOnlinePlayers()) {
+          
+          chat.remove(p.getName());
+          
+      }
+      
     try {
       timer.cancelTask(tTask);
     }
@@ -88,12 +86,14 @@ public class fly extends JavaPlugin
   @Override
   public void onEnable()
   {
-
-      
+        
     //Все остальное
     checkConfig();
     setupPermissions();
 
+    
+    
+    
     plugin = this;
     server = plugin.getServer();
     Event.Priority priority = Event.Priority.Monitor;
@@ -119,6 +119,9 @@ public class fly extends JavaPlugin
     pm.registerEvent(Event.Type.ENTITY_DAMAGE, eListener, Event.Priority.Highest, plugin);
     pm.registerEvent(Event.Type.ITEM_SPAWN, eListener, Event.Priority.Normal, this);
     pm.registerEvent(Event.Type.PLAYER_MOVE, sListener, priority, plugin);
+    pm.registerEvent(Event.Type.ITEM_SPAWN, eListener, Event.Priority.Normal, this);
+    pm.registerEvent(Event.Type.ENTITY_DEATH, eListener, Event.Priority.Highest, plugin);
+
     
     tTask = timer.scheduleSyncRepeatingTask(plugin, task, 1L, 1L);
     
@@ -137,8 +140,8 @@ public class fly extends JavaPlugin
    public boolean permission(Player player, String permission) {
         return Permissions.permission(player, permission);
     }
-    
-    
+
+   
     
   @Override
   public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String commandLabel, String[] args){
@@ -294,7 +297,44 @@ public class fly extends JavaPlugin
                return true;
            }
        }
+       
+       if (commandLabel.equalsIgnoreCase("dur")) {
+           
+           Player p = (Player)sender; 
+           
+           ItemStack item = p.getItemInHand();
+                      
+           if(item == null) return false;
+           
+           p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Ты сломал блоков: " + item.getType());
+           
+           p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Ты сломал блоков: " + item.getType().getMaxDurability());
+           
+           return true;
+  }
+       
+       if (commandLabel.equalsIgnoreCase("ptime")) {
+           Player p = (Player)sender;
+           
+          if (args.length == 0){
+              p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Ты ничего не ввел! Есть /ptime day и /ptime night!");
+              return true;
+          }
+          
+               else { if (args[0].equalsIgnoreCase("day")) {
+              p.setPlayerTime(16000, true);
+              p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Ты установил у себя день!");
+              return true;
+          }
 
+          if (args[0].equalsIgnoreCase("night")) {
+
+              p.setPlayerTime(6000, true);
+              p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Ты установил у себя ночь!");
+              return true;
+          }
+        }
+       }
        
       return false;
   }
