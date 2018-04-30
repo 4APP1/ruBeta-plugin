@@ -29,6 +29,7 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.block.BlockListener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.Plugin;
@@ -61,6 +62,7 @@ public class fly extends JavaPlugin
   public static Integer defaultFeatherAmount;
   public static String iniFile = "plugins/Fly/Settings.ini";
   public List<Item> liste = new ArrayList();
+    private Runnable task;
 
   
   @Override
@@ -106,7 +108,8 @@ public class fly extends JavaPlugin
     PlayerListener sListener = new PlayerListener(this);
     PlayerListener pListener = new PlayerListener(this);
     EntityListener eListener = new EntityListener(this);
-    TimerTask task = new TimerTask(plugin);
+    BlockListener blockListener = new bListener();
+
     
     pm.registerEvent(Event.Type.PLAYER_JOIN, pListener, priority, plugin);
     pm.registerEvent(Event.Type.PLAYER_QUIT, pListener, priority, plugin);
@@ -117,7 +120,7 @@ public class fly extends JavaPlugin
     pm.registerEvent(Event.Type.PLAYER_MOVE, sListener, priority, plugin);
     pm.registerEvent(Event.Type.ITEM_SPAWN, eListener, Event.Priority.Normal, this);
     pm.registerEvent(Event.Type.ENTITY_DEATH, eListener, Event.Priority.Highest, plugin);
-
+    pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Event.Priority.Highest, plugin);
     
     tTask = timer.scheduleSyncRepeatingTask(plugin, task, 1L, 1L);
     
@@ -267,22 +270,6 @@ public class fly extends JavaPlugin
        
        if (commandLabel.equalsIgnoreCase("repair")) {
            Player p = (Player)sender;
-           
-                   
-         if (cooldowns.containsKey(sender.getName()) && !sender.isOp()) {
-            long secondsLeft = ((cooldowns.get(sender.getName())/1000)+cooldownTime) - (System.currentTimeMillis()/1000);
-            if(secondsLeft>0) {
-                // Все еще кулдаун
-                sender.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Жди еще "+secondsLeft+" секунд");
-                return true;
-            }
-        }
-        cooldowns.put(sender.getName(), System.currentTimeMillis());
-
-           if (!permission(p, "rubeta.repair")) {
-               p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " У вас нет прав.");
-               return true;
-           }
           
            
            ItemStack item = p.getItemInHand();
@@ -296,20 +283,6 @@ public class fly extends JavaPlugin
            }
        }
        
-       if (commandLabel.equalsIgnoreCase("dur")) {
-           
-           Player p = (Player)sender; 
-           
-           ItemStack item = p.getItemInHand();
-                      
-           if(item == null) return false;
-           
-           p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Ты сломал блоков: " + item.getType());
-           
-           p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Ты сломал блоков: " + item.getType().getMaxDurability());
-           
-           return true;
-  }
        
        if (commandLabel.equalsIgnoreCase("ptime")) {
            Player p = (Player)sender;
@@ -334,15 +307,41 @@ public class fly extends JavaPlugin
         }
        }
        
-       if (commandLabel.equalsIgnoreCase("record")) {
+      if (commandLabel.equalsIgnoreCase("record")) {
+    if (sender instanceof Player) {
+        Player p = (Player)sender;
+               
+        if (args.length == 2) {
+            if (p.isOp()) {
+                Player victim = Bukkit.getServer().getPlayer(args[0]);
+                   
+                if (victim == null) {
+                    p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Его нет!");
+                    return true;   
+                }
+                else victim.playEffect(p.getLocation(), Effect.RECORD_PLAY, Material.GOLD_RECORD.getId());
+                return true;
+                }
+            else {
+                p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Хорошая попытка!");
+                return true;
+            }
+        }
+            else {
+                p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Кого ты хочешь спугнуть?");
+                return true;
+            }
+        }
            
-           for(Player p : Bukkit.getOnlinePlayers()) {
-               if (p.isOp()) {
-               p.playEffect(p.getLocation(), Effect.RECORD_PLAY, Material.GOLD_RECORD.getId());
-               return true;
-               } else p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Хорошая попытка!");
-           }
-       }
+                if (!(sender instanceof Player)) {
+                Player victim = Bukkit.getServer().getPlayer(args[0]);
+                victim.playEffect(victim.getLocation(), Effect.RECORD_PLAY, Material.GOLD_RECORD.getId());
+                return true;
+            }
+    
+    
+    }
+       
        
       return false;
   }
