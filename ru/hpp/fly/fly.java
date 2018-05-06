@@ -43,6 +43,8 @@ public class fly extends JavaPlugin
 
 {
     
+    
+    
   public HashMap<String, Long> cooldowns = new HashMap<String, Long>();
   public static final HashMap<Player, Double> active = new HashMap();
   public static final HashMap<Player, Integer> flyingPlayers = new HashMap();
@@ -119,8 +121,8 @@ public class fly extends JavaPlugin
     pm.registerEvent(Event.Type.ITEM_SPAWN, eListener, Event.Priority.Normal, this);
     pm.registerEvent(Event.Type.PLAYER_MOVE, sListener, priority, plugin);
     pm.registerEvent(Event.Type.ITEM_SPAWN, eListener, Event.Priority.Normal, this);
-    pm.registerEvent(Event.Type.ENTITY_DEATH, eListener, Event.Priority.Highest, plugin);
-    pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Event.Priority.Highest, plugin);
+    pm.registerEvent(Event.Type.CREATURE_SPAWN, eListener, Event.Priority.Normal, plugin);
+    pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Event.Priority.Normal, plugin);
     
     tTask = timer.scheduleSyncRepeatingTask(plugin, task, 1L, 1L);
     
@@ -239,6 +241,8 @@ public class fly extends JavaPlugin
 
         Player player = Bukkit.getServer().getPlayer(args[0]);
                 
+        if (!(player instanceof Player)) return false;
+        
         Packet53BlockChange deathPacket = new Packet53BlockChange();
         
                 deathPacket.a = (int) player.getLocation().getX();
@@ -251,7 +255,7 @@ public class fly extends JavaPlugin
         ((CraftPlayer) player).getHandle().netServerHandler.sendPacket(deathPacket);
             return true;
         }
-        
+     
         else{
             p.sendMessage(ChatColor.RED + "[RuBeta] " + ChatColor.AQUA + "Нет, ты не админ.");
             return true;
@@ -269,9 +273,14 @@ public class fly extends JavaPlugin
        }
        
        if (commandLabel.equalsIgnoreCase("repair")) {
+           if (!(sender instanceof Player)) return false;
            Player p = (Player)sender;
           
-           
+           if (!permission(p, "rubeta.repair")) {
+               p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Нет прав.");
+               return true;
+           }
+
            ItemStack item = p.getItemInHand();
            if (item.getDurability() != 0) {
                item.setDurability((short) 0);
@@ -281,37 +290,58 @@ public class fly extends JavaPlugin
                p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Нет.");
                return true;
            }
-       }
-       
+        }
        
        if (commandLabel.equalsIgnoreCase("ptime")) {
-           Player p = (Player)sender;
-           
-          if (args.length == 0){
-              p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Ты ничего не ввел! Есть /ptime day и /ptime night!");
-              return true;
-          }
-          
-               else { if (args[0].equalsIgnoreCase("day")) {
-              p.setPlayerTime(16000, true);
-              p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Ты установил у себя день!");
-              return true;
-          }
-
-          if (args[0].equalsIgnoreCase("night")) {
-
-              p.setPlayerTime(6000, true);
-              p.sendMessage(ChatColor.RED + "[RuBeta]" + ChatColor.AQUA + " Ты установил у себя ночь!");
-              return true;
-          }
+      Player p = (Player)sender;
+      if (args.length == 0) {
+        p.sendMessage(ChatColor.BLUE + "}---- PlayerTime помощь ----{");
+        p.sendMessage(ChatColor.GREEN + "/ptime day" + ChatColor.BLUE + " - Ставит время на день.");
+        p.sendMessage(ChatColor.GREEN + "/ptime night" + ChatColor.BLUE+ " - Ставит время на ночь.");
+        p.sendMessage(ChatColor.GREEN + "/ptime morning" + ChatColor.BLUE + " - Ставит время на утро.");
+        p.sendMessage(ChatColor.GREEN + "/ptime reset" + ChatColor.BLUE + " - Сбрасывает время на серверное.");
+        p.sendMessage(ChatColor.GREEN + "/ptime info" + ChatColor.BLUE + " - Показывает информацию о времени.");
+        return true;
+      }
+      if (args.length == 1) {
+        if (args[0].equalsIgnoreCase("day")) {
+          p.setPlayerTime(6000L, false);
+          p.sendMessage(ChatColor.GREEN + "[RuBeta] " + ChatColor.RED + "Ты установил у себя день.");
+          return true;
         }
-       }
+        if (args[0].equalsIgnoreCase("night")) {
+          p.setPlayerTime(18000L, false);
+          p.sendMessage(ChatColor.GREEN + "[RuBeta] " + ChatColor.RED + "Ты установил у себя ночь.");
+          return true;
+        }
+        if (args[0].equalsIgnoreCase("morning")) {
+          p.setPlayerTime(0L, false);
+          p.sendMessage(ChatColor.GREEN + "[RuBeta] " + ChatColor.RED + "Ты установил у себя утро.");
+          return true;
+        }
+        if (args[0].equalsIgnoreCase("dawn")) {
+          p.setPlayerTime(12000L, false);
+          p.sendMessage(ChatColor.GREEN + "[RuBeta] " + ChatColor.RED + "Ты установил у себя рассвет.");
+          return true;
+        }
+        if (args[0].equalsIgnoreCase("reset")) {
+          p.resetPlayerTime();
+          p.sendMessage(ChatColor.GREEN + "[RuBeta] " + ChatColor.RED + "Ты установил у себя серверное время.");
+          return true;
+        }
+        if (args[0].equalsIgnoreCase("info")) {
+          
+          p.sendMessage(ChatColor.RED + "Твое время: " + ChatColor.GREEN + p.getPlayerTime() + ChatColor.RED + ". Различие между твоим и серверным временем: " + ChatColor.GREEN + p.getPlayerTimeOffset() + ChatColor.RED + ".");
+          return true;
+        }
+      }
+    }
        
       if (commandLabel.equalsIgnoreCase("record")) {
     if (sender instanceof Player) {
         Player p = (Player)sender;
                
-        if (args.length == 2) {
+        if (args.length == 1) {
             if (p.isOp()) {
                 Player victim = Bukkit.getServer().getPlayer(args[0]);
                    
@@ -334,15 +364,9 @@ public class fly extends JavaPlugin
         }
            
                 if (!(sender instanceof Player)) {
-                Player victim = Bukkit.getServer().getPlayer(args[0]);
-                victim.playEffect(victim.getLocation(), Effect.RECORD_PLAY, Material.GOLD_RECORD.getId());
-                return true;
-            }
-    
-    
+                return false;
+                }
     }
-       
-       
       return false;
   }
 

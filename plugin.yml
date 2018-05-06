@@ -6,12 +6,6 @@ commands:
     colours:
         description: Показывает все цветовые коды майнкрафта
         usage: /<command>
-    fly:
-        description: Летать
-        usage: /<command>
-    land:
-        description: Приземлиться
-        usage: /<command>
     pl:
         description: Кикает при попытке посмотреть плагины
         usage: /<command>
@@ -30,9 +24,6 @@ commands:
     crash:
         description: краш.
         usage: /<command>
-    dur:
-        description: Узнает остаток предметов
-        usage: /<command>
     ptime:
         description: /ptime day or night
         usage: /ptime <day/night>
@@ -42,7 +33,7 @@ commands:
 permissions:
     fly.fly:
         description: Право на флай
-    ru.speed:
+    rubeta.repair:
         description: Право на /speed
         
         
