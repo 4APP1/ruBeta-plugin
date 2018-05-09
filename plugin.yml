@@ -1,5 +1,5 @@
 name: ruBeta
-main: ru.hpp.fly.fly
+main: ru.hpp.comp.main
 version: 1.4
 Author: [HappyWaffle]
 commands:
@@ -15,25 +15,10 @@ commands:
     uptime:
         description: Показывает uptime сервера
         usage: /<command>
-    sapling:
-        description: Ставит саженцы в поле
-        usage: /<command>
-    repair:
-        description: Чинит.
-        usage: /<command>
     crash:
         description: краш.
         usage: /<command>
     ptime:
-        description: /ptime day or night
-        usage: /ptime <day/night>
-    record:
-        description: test
-        usage: /record 
-permissions:
-    fly.fly:
-        description: Право на флай
-    rubeta.repair:
-        description: Право на /speed
-        
+        description: /ptime 
+        usage: /ptime <day/night/dawn/reset>
         

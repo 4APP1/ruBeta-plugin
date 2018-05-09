@@ -1,5 +1,5 @@
 
-package ru.hpp.fly;
+package ru.hpp.comp;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
